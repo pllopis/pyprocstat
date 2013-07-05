@@ -16,6 +16,9 @@ class ProcStat:
             self.last_data = self.current_data.copy()
             self.diff_data = self.current_data.copy() # initialize structure, will get overwritten
 
+    def is_single_cpu(self, key):
+            return (key.startswith('cpu') and len(key) > 3) # 'cpu0', 'cpu1', etc
+
     def stat_difference(self):
         if self.last_data == None:
             self.last_data = self.current_data
@@ -24,11 +27,17 @@ class ProcStat:
             while i < len(self.current_data[key]):
                 self.diff_data[key][i] = self.current_data[key][i] - self.last_data[key][i]
                 i = i + 1
-        # normalize CPU
+        # normalize CPU aggregate
         period = self.diff_data['totaltime'][0]
         time = period if period != 0 else 1 # first interval period is 0
-        f = lambda x: float(x) / time
+        f = lambda x: min(1.0, float(x) / time)
         self.diff_data['cpu'] = map(f, self.diff_data['cpu'])
+        # normalize single CPU data
+        for key in self.diff_data:
+            if self.is_single_cpu(key):
+                old = self.diff_data[key]
+                self.diff_data[key] = map(f, self.diff_data[key])
+                print "(%s %s => %s)" % (key, old, self.diff_data[key])
 
     def update(self):
         self.update_stat()
