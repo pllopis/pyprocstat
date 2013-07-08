@@ -88,3 +88,6 @@ class ProcStat:
             self.fstat.close()
         if (self.fmem != None):
             self.fmem.close()
+
+    def __str__(self):
+        return "blablabla "
