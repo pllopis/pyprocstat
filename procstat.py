@@ -34,7 +34,7 @@ class ProcStat:
         bundle.append(self.diff_data['procs_running'][0])
         bundle.append(self.diff_data['procs_blocked'][0])
         bundle.append(sum(self.diff_data['softirq']))
-        bundle.append(self.memdata)
+        bundle.append([self.memdata[k] for k in self.memdata])
         self.bundle = bundle
 
     def is_single_cpu(self, key):
@@ -60,13 +60,18 @@ class ProcStat:
             if self.is_single_cpu(key):
                 old = self.diff_data[key]
                 self.diff_data[key] = map(f, self.diff_data[key])
-                print "(%s %s => %s)" % (key, old, self.diff_data[key])
+        #        print "(%s %s => %s)" % (key, old, self.diff_data[key])
+
+    def diff(self):
+        if self.diff_data != None: # no reason to do difference when initializing class
+            self.stat_difference()
+            self.create_bundle()
+        #print "(diff_data %s)" % self.diff_data
 
     def update(self):
         self.update_stat()
         self.update_mem()
-        if self.diff_data != None:
-            self.create_bundle()
+        self.diff()
         
     def update_stat(self):
         self.fstat.seek(0)
@@ -86,9 +91,6 @@ class ProcStat:
         data['totaltime'] = [ totaltime ] 
         self.last_data = self.current_data
         self.current_data = data.copy()
-        if self.diff_data != None: # no reason to do difference when initializing class
-            self.stat_difference()
-        print "(diff_data %s)" % self.diff_data
 
     def update_mem(self):
         self.fmem.seek(0)
@@ -104,7 +106,7 @@ class ProcStat:
             elif line.startswith('Cached'):
                 data['Cached'] = line.split()[1]
         self.memdata = data
-        print "(memdata %s)" % data
+        #print "(memdata %s)" % data
 
     def __del__(self):
         # Avoid opening the file more than once. Keep file open, close on del
