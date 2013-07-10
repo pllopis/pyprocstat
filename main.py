@@ -8,7 +8,7 @@ def capture(sleeptime, address):
     while True:
         stat.update()
         data = str(stat)
-        print "Sending: \"%s\"" % data
+        print "Sending (len %s): \"%s\"" % (len(data), data)
         t1 = time.time()
         s.sendall(data)
         t2 = time.time()

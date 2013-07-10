@@ -24,18 +24,19 @@ class ProcStat:
         of what is being bundled, and in what order the data is stored.'''
         bundle = []
         f = lambda x: int(x*1000) # convert from 0..1 double to 0..1000 integer
-        bundle.append(map(f, self.diff_data['cpu']))
-        bundle.append(map(f, self.diff_data['cpu0']))
-        bundle.append(map(f, self.diff_data['cpu1']))
-        bundle.append(sum(self.diff_data['intr']))
-        bundle.append(self.diff_data['ctxt'][0])
-        bundle.append(self.diff_data['btime'][0])
-        bundle.append(self.diff_data['processes'][0])
-        bundle.append(self.diff_data['procs_running'][0])
-        bundle.append(self.diff_data['procs_blocked'][0])
-        bundle.append(sum(self.diff_data['softirq']))
-        bundle.append([self.memdata[k] for k in self.memdata])
-        self.bundle = bundle
+        bundle.extend(map(f, self.diff_data['cpu']))
+        bundle.extend(map(f, self.diff_data['cpu0']))
+        bundle.extend(map(f, self.diff_data['cpu1']))
+        bundle.extend([sum(self.diff_data['intr'])])
+        bundle.extend(self.diff_data['ctxt'])
+        bundle.extend(self.diff_data['btime'])
+        bundle.extend(self.diff_data['processes'])
+        bundle.extend(self.diff_data['procs_running'])
+        bundle.extend(self.diff_data['procs_blocked'])
+        bundle.extend([sum(self.diff_data['softirq'])])
+        bundle.extend([self.memdata[k] for k in self.memdata])
+        print "bundle size %s" % len(bundle)
+        self.bundle = map(lambda x: str(x), bundle)
 
     def is_single_cpu(self, key):
             return (key.startswith('cpu') and len(key) > 3) # 'cpu0', 'cpu1', etc
@@ -116,4 +117,7 @@ class ProcStat:
             self.fmem.close()
 
     def __str__(self):
-        return str(self.bundle)
+        return "%s\n" % ' '.join(self.bundle)
+
+#    def marshal_bundle(self): # Deprecated, no longer used
+#        return ''.join([struct.pack('>I', x) for x in self.bundle])
