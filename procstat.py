@@ -35,7 +35,6 @@ class ProcStat:
         bundle.extend(self.diff_data['procs_blocked'])
         bundle.extend([sum(self.diff_data['softirq'])])
         bundle.extend([self.memdata[k] for k in self.memdata])
-        print "bundle size %s" % len(bundle)
         self.bundle = map(lambda x: str(x), bundle)
 
     def is_single_cpu(self, key):
