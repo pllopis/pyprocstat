@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-pyprocstat. Gathers system information from /proc and streams it over the network.
+pyprocstat. Gathers system information from /sys, /proc and streams it over the network.
 
 Usage:
   pyprocstat.py (-h | --help)
@@ -19,6 +19,10 @@ from docopt import docopt
 
 def capture(sleeptime, port, quiet=False):
     stat = ProcStat()
+    #for i in stat.cpu_data['cstates']:
+    #    for j in i:
+    #        print j['latency']
+    #return
     server = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
