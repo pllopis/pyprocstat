@@ -64,7 +64,7 @@ class ProcStat:
         'pstates' is a list, the ith element being the ith processor.
           Each processor is a dict with two keys:
           'time_in_state_fh' is the file handle for /sys/devices/system/cpu/cpuN/cpufreq/stats/time_in_state
-          'time_in_state' is a list of integers for the time spent in each state, same order as time_in_state file
+          'pstates' is a list of integers for the time spent in each state, same order as time_in_state file
         '''
         data = {} 
         fpresent = open('/sys/devices/system/cpu/present')
@@ -112,7 +112,7 @@ class ProcStat:
         of what is being bundled, and in what order the data is stored.
         
         Each line:
-        cpu[10] cpu0[10] .. cpuN[10] sum(intr) ctxt btime processes procs_running procs_blocked sum(softirq) memtotal memfree buffers cached cpu0_cstate0..cpu0_cstateN .. cpuN_cstate0..cpuN_cstateN
+        cpu[10] cpu0[10] .. cpuN[10] sum(intr) ctxt btime processes procs_running procs_blocked sum(softirq) memtotal memfree buffers cached dirty writeback cpu0_cstate0..cpu0_cstateN .. cpuN_cstate0..cpuN_cstateN
         '''
         bundle = []
         # get all values from diff_data that have cpu* keys
@@ -247,6 +247,10 @@ class ProcStat:
                 data['Buffers'] = line.split()[1]
             elif line.startswith('Cached'):
                 data['Cached'] = line.split()[1]
+            elif line.startswith('Dirty'):
+                data['Dirty'] = line.split()[1]
+            elif line.startswith('Writeback'):
+                data['Writeback'] = line.split()[1]
         self.memdata = data
         #print "(memdata %s)" % data
 

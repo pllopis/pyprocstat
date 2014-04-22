@@ -39,7 +39,7 @@ def capture(sleeptime, port, quiet=False):
         while True:
             stat.update() # gather system data
             data = str(stat)
-            if not quiet: print "Sending (len %s): \"%s\"" % (len(data), data)
+            if not quiet: print "Sending (len %s, %s items): \"%s\"" % (len(data), len(data.split()), data)
             data = struct.pack('!I', len(data)) + data # prefix payload with size_u32(payload)
             t1 = time.time()
             try:
