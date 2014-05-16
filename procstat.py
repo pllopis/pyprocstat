@@ -117,9 +117,9 @@ class ProcStat:
         bundle = []
         # get all values from diff_data that have cpu* keys
         cpudata = dict((k, v) for k, v in self.diff_data.items() if k.startswith('cpu'))
-        f = lambda x: int(x*1000) # convert from 0..1 double to 0..1000 integer
+        #f = lambda x: int(x*1000) # convert from 0..1 double to 0..1000 integer
         # apply f to every cpudata item
-        cpudata = dict((k, map(f, v)) for k, v in cpudata.items())
+        #cpudata = dict((k, map(f, v)) for k, v in cpudata.items())
         
         # bundle proc stats
         for k in cpudata:
