@@ -6,18 +6,22 @@ class ProcStat:
     def __init__(self):
         self.fstat = None
         self.fmem = None
+        self.vmfields = ['pgmajfault', 'pgfault']
         try:
             fstat = open('/proc/stat')
+            fvmstat = open('/proc/vmstat')
             fmem = open('/proc/meminfo')
             cpu_data = self.init_cpu_data()
         except IOError:
             raise Exception('Fatal error: some /proc or /sys features not available') 
         else:
             self.fstat = fstat
+            self.fvmstat = fvmstat
             self.fmem = fmem
             self.cpu_data = cpu_data
             self.current_data = None
             self.diff_data = None
+            self.vmstat = {'current': None, 'last': None, 'diff': None}
             self.update()
             self.last_data = self.current_data.copy()
             self.diff_data = self.current_data.copy() # initialize structure, will get overwritten
@@ -36,7 +40,6 @@ class ProcStat:
             fh.seek(0)
             n = int(fh.readlines()[0].rstrip())
             fh.close()
-
         return n
 
     def read_pstates(self, fh):
@@ -143,6 +146,8 @@ class ProcStat:
         for cpu in self.cpu_data['pstates']:
             bundle.extend(cpu['diff'])
 
+        bundle.extend([k for k in self.vmstat['current']])
+
         self.bundle = map(lambda x: str(x), bundle)
 
     #TODO: use count_cpus instead of this function
@@ -154,6 +159,17 @@ class ProcStat:
 
     def pstates_difference(self):
         pass
+
+    def vmstat_difference(self):
+        if self.vmstat['last'] == None:
+            self.vmstat['last'] = self.vmstat['current']
+        if self.vmstat['diff'] == None:
+            self.vmstat['diff'] = self.vmstat['current']
+        i = 0
+        while i < len(self.vmstat['current']):
+            print(len(self.vmstat['last']))
+            self.vmstat['diff'][i] = self.vmstat['current'][i] - self.vmstat['last'][i]
+            i = i + 1
 
     def stat_difference(self):
         if self.last_data == None:
@@ -182,6 +198,7 @@ class ProcStat:
             self.stat_difference()
             self.cstates_difference()
             self.pstates_difference()
+            self.vmstat_difference()
             self.create_bundle()
         #print "(diff_data %s)" % self.diff_data
 
@@ -190,6 +207,7 @@ class ProcStat:
         self.update_mem()
         self.update_cstates()
         self.update_pstates()
+        self.update_vmstat()
         self.diff()
 
     def update_cstates(self):
@@ -234,6 +252,14 @@ class ProcStat:
         self.last_data = self.current_data
         self.current_data = data.copy()
 
+    def update_vmstat(self):
+        self.fvmstat.seek(0)
+        lines = self.fvmstat.readlines()
+        fields = [w for w in lines if w.split()[0] in self.vmfields] # grep vmfields
+        data = [int(f.split()[1]) for f in fields]
+        self.vmstat['last'] = self.vmstat['current']
+        self.vmstat['current'] = data
+
     def update_mem(self):
         self.fmem.seek(0)
         rawdata = self.fmem.readlines()
@@ -258,6 +284,8 @@ class ProcStat:
         # Avoid opening the file more than once. Keep file open, close on del
         if (self.fstat != None):
             self.fstat.close()
+        if (self.fvmstat != None):
+            self.fvmstat.close()
         if (self.fmem != None):
             self.fmem.close()
         if (self.cpu_data != None):
