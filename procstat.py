@@ -12,6 +12,7 @@ class ProcStat:
             fvmstat = open('/proc/vmstat')
             fmem = open('/proc/meminfo')
             cpu_data = self.init_cpu_data()
+            temp_data = self.init_temp_data()
         except IOError:
             raise Exception('Fatal error: some /proc or /sys features not available') 
         else:
@@ -19,6 +20,7 @@ class ProcStat:
             self.fvmstat = fvmstat
             self.fmem = fmem
             self.cpu_data = cpu_data
+            self.temp_data = temp_data
             self.current_data = None
             self.diff_data = None
             self.vmstat = {'current': None, 'last': None, 'diff': None}
@@ -99,6 +101,17 @@ class ProcStat:
             data['pstates'].append(d) 
 
         return data
+
+    def init_temp_data(self):
+        sensors = {  'mb1': '/sys/devices/virtual/thermal/thermal_zone0/temp', 
+                'mb2': '/sys/devices/virtual/thermal/thermal_zone1/temp', 
+                'cpu': '/sys/devices/platform/coretemp.0/temp1_input', 
+                'core0': '/sys/devices/platform/coretemp.0/temp2_input', 
+                'core1': '/sys/devices/platform/coretemp.0/temp3_input', 
+                'core2': '/sys/devices/platform/coretemp.0/temp4_input', 
+                'core3': '/sys/devices/platform/coretemp.0/temp5_input' }
+        return { name : open(sensors[name]) for name in sensors }
+
         
     def count_cpus(self, fpresent):
         fpresent.seek(0)
@@ -115,7 +128,7 @@ class ProcStat:
         of what is being bundled, and in what order the data is stored.
         
         Each line:
-        cpu[10] cpu0[10] .. cpuN[10] sum(intr) ctxt btime processes procs_running procs_blocked sum(softirq) memtotal memfree buffers cached dirty writeback cpu0_cstate0..cpu0_cstateN .. cpuN_cstate0..cpuN_cstateN
+        cpu[10] cpu0[10] .. cpuN[10] sum(intr) ctxt btime processes procs_running procs_blocked sum(softirq) memtotal memfree buffers cached dirty writeback cpu0_cstate0..cpu0_cstateN .. cpuN_cstate0..cpuN_cstateN cpu0_pstate0..cpuN_pstateN pgfault pgmajfault
         '''
         bundle = []
         # get all values from diff_data that have cpu* keys
@@ -146,7 +159,8 @@ class ProcStat:
         for cpu in self.cpu_data['pstates']:
             bundle.extend(cpu['diff'])
 
-        bundle.extend([k for k in self.vmstat['current']])
+        bundle.extend([k for k in self.vmstat['diff']])
+        bundle.extend([k for k in self.temp])
 
         self.bundle = map(lambda x: str(x), bundle)
 
@@ -167,7 +181,7 @@ class ProcStat:
             self.vmstat['diff'] = self.vmstat['current']
         i = 0
         while i < len(self.vmstat['current']):
-            print(len(self.vmstat['last']))
+            #print(len(self.vmstat['last']))
             self.vmstat['diff'][i] = self.vmstat['current'][i] - self.vmstat['last'][i]
             i = i + 1
 
@@ -208,6 +222,7 @@ class ProcStat:
         self.update_cstates()
         self.update_pstates()
         self.update_vmstat()
+        self.update_temp()
         self.diff()
 
     def update_cstates(self):
@@ -252,6 +267,9 @@ class ProcStat:
         self.last_data = self.current_data
         self.current_data = data.copy()
 
+    def update_temp(self):
+        self.temp = [self.file_read_int(self.temp_data[k]) for k in self.temp_data]
+
     def update_vmstat(self):
         self.fvmstat.seek(0)
         lines = self.fvmstat.readlines()
@@ -295,7 +313,9 @@ class ProcStat:
                     cstate['usage_fh'].close()
             for cpu in self.cpu_data['pstates']:
                 cpu['time_in_state_fh'].close()
-                
+        if (self.temp_data != None):
+            for key in self.temp_data:
+                self.temp_data[key].close()
 
     def __str__(self):
         return "%s\n" % ' '.join(self.bundle)
