@@ -1,6 +1,6 @@
 import unittest
 import procstat
-from modules.stat_iface import StatIface
+from stat_iface import StatIface
 from StringIO import StringIO
 
 class StatIfaceTest(StatIface):

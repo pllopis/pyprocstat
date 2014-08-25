@@ -2,7 +2,7 @@ import glob
 import time
 import importlib
 from os.path import join
-from modules.stat_iface import StatIface
+from stat_iface import StatIface
 
 default_modules = ['stat']
 
