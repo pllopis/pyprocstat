@@ -10,6 +10,24 @@ class Stat(StatIface):
 
     def update(self):
         self.data = self.file_read_fields(self.files['stat'])
+        self.fix_cpudata()
+
+    def fix_cpudata(self):
+        keys = self.data.items()
+        for key, value in keys:
+            if key.startswith('cpu'):
+                value = self.data[key]
+                self.data.pop(key, None)
+                self.data['%s_user' % key] = [value[0]]
+                self.data['%s_nice' % key] = [value[1]]
+                self.data['%s_system' % key] = [value[2]]
+                self.data['%s_idle' % key] = [value[3]]
+                self.data['%s_iowait' % key] = [value[4]]
+                self.data['%s_irq' % key] = [value[5]]
+                self.data['%s_softirq' % key] = [value[6]]
+                self.data['%s_steal' % key] = [value[7]]
+                self.data['%s_guest' % key] = [value[8]]
+                self.data['%s_guest_nice' % key] = [value[9]]
         
     def diff(self):
         if self.last_data == None:
@@ -32,6 +50,12 @@ class Stat(StatIface):
         self.diff_data['softirq'] = [sum(self.diff_data['softirq'])]
 
     def bundle(self):
+        bundle = []
+        # join all values from self.diff_data dict into a single list
+        # and convert each item to string
+        values = [v for k, v in self.diff_data.iteritems()]
+        map(bundle.extend, values)
+        return map(lambda x: str(x), bundle)
         bundle = []
         cpudata = dict((k, v) for k, v in self.diff_data.items() if k.startswith('cpu'))
         for k in cpudata:
