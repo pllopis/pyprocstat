@@ -4,7 +4,7 @@ import importlib
 from os.path import join
 from stat_iface import StatIface
 
-default_modules = ['stat', 'meminfo', 'vmstat']
+default_modules = ['stat', 'meminfo', 'vmstat', 'temp']
 
 class ProcStat:
     def __init__(self, load_modules=default_modules):
