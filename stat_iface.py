@@ -44,7 +44,7 @@ class StatIface:
         field1: 10
         field2  20 kb
         Will return { 'field1': 10, 'field2': 20 }. Field can have : as suffix,
-        If fields=None, all fields are returned.
+        If fields=None, all fields are returned. Otherwise greps for strings in fields list.
         The val_idx argument determines which column (index from 0) contains the value.
         val_idx=0 means return everything from the second to last column as array of ints
         '''
