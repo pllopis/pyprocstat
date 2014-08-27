@@ -13,7 +13,7 @@ class ProcStat:
             self.instances = [getattr(m, 'Stat')() for m in modules]
             for i in self.instances:
                 if not isinstance(i, StatIface):
-                    raise NotImplementedError()
+                    raise NotImplementedError('module %s does not implement Stat' % m)
 #        except ImportError:
 #            raise Exception('Module %s not found.' % m)
 #        except AttributeError:
@@ -31,5 +31,5 @@ class ProcStat:
         map(self.bundle_data.extend, bundles)
     
     def __str__(self):
-        return "%s\n" % ' '.join(self.bundle_data)
+        return "%s" % ' '.join(self.bundle_data)
 
