@@ -3,7 +3,9 @@ import fnmatch
 import os
 
 class Stat(StatIface):
-    def __init__(self):
+    def __init__(self, uname):
+        if uname[0] != 'Linux':
+            raise Exception('OS required to be Linux.')
         paths = {}
         for z in self.find_zones():
             paths[z[0]] = z[1]
