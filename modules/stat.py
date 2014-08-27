@@ -58,17 +58,4 @@ class Stat(StatIface):
         values = [v for k, v in self.diff_data.iteritems()]
         map(bundle.extend, values)
         return map(lambda x: str(x), bundle)
-        bundle = []
-        cpudata = dict((k, v) for k, v in self.diff_data.items() if k.startswith('cpu'))
-        for k in cpudata:
-            bundle.extend(cpudata[k])
-        bundle.extend(self.diff_data['intr'])
-        bundle.extend(self.diff_data['ctxt'])
-        bundle.extend(self.diff_data['btime'])
-        bundle.extend(self.diff_data['processes'])
-        bundle.extend(self.diff_data['procs_running'])
-        bundle.extend(self.diff_data['procs_blocked'])
-        bundle.extend(self.diff_data['softirq'])
-        bundle = map(lambda x: str(x), bundle)
-        return bundle
 
