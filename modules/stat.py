@@ -1,7 +1,9 @@
 from stat_iface import StatIface
 
 class Stat(StatIface):
-    def __init__(self):
+    def __init__(self, uname):
+        if uname[0] != 'Linux':
+            raise Exception('OS required to be Linux.')
         self.files = self.open_files({'stat': '/proc/stat'})
         self.last_data = None
         self.data = {}
