@@ -18,7 +18,6 @@ from procstat import ProcStat
 from docopt import docopt
 
 def capture(sleeptime, port, quiet=False):
-    stat = ProcStat()
     #for i in stat.cpu_data['cstates']:
     #    for j in i:
     #        print j['latency']
@@ -36,13 +35,14 @@ def capture(sleeptime, port, quiet=False):
             print "Interrupted! Exiting.."
             sys.exit(0)
         if not quiet: print "Incoming connection from", address
+        stat = ProcStat()
         while True:
             stat.update() # gather system data
             data = str(stat)
             if not quiet:
                 print "Sending (len %s, %s items): \"%s\"" % (len(data), len(data.split()), data)
             else:
-                print data
+                pass#print data
             data = struct.pack('!I', len(data)) + data # prefix payload with size_u32(payload)
             t1 = time.time()
             try:
