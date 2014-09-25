@@ -33,5 +33,5 @@ class ProcStat:
         map(self.bundle_data.extend, bundles)
     
     def __str__(self):
-        return "%s" % ' '.join(self.bundle_data)
+        return "%s\n" % ' '.join(self.bundle_data)
 
