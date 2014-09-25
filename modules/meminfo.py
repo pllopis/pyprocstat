@@ -12,7 +12,7 @@ class Stat(StatIface):
 
     def update(self):
         fields = ['MemTotal', 'MemFree', 'Buffers', 'Cached',
-                    'Dirty', 'Writeback']
+                    'Dirty', 'Writeback', 'Mapped']
         self.data = self.file_read_fields(self.files['meminfo'], 
                         val_idx=1, fields=fields)
 
