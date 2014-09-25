@@ -11,7 +11,7 @@ class Stat(StatIface):
         self.update()
 
     def update(self):
-        fields = ['pgfault', 'pgmajfault']
+        fields = ['pgfault', 'pgmajfault', 'nr_active_file', 'nr_inactive_file', 'nr_active_anon', 'nr_inactive_anon', 'nr_mapped']
         self.data = self.file_read_fields(self.files['vmstat'], 
                         val_idx=1, fields=fields)
 
