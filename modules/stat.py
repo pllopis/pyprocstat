@@ -45,6 +45,7 @@ class Stat(StatIface):
                 self.diff_data[key] = self.data[key]
             else:
                 self.diff_data[key] = self.list_diff(self.data[key], self.last_data[key])
+        self.last_data = self.data
         self.summarize() # summarize diff_data
 
     def summarize(self):
