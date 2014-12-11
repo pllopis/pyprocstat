@@ -13,7 +13,14 @@ class Stat(StatIface):
     def read_stats(self, f):
         f.seek(0)
         line = f.readlines()[0].split()
-        return {'sectors_read': [int(line[2])], 'sectors_written': [int(line[6])]}
+        return {'reads_completed': [int(line[0])],
+                'reads_merged': [int(line[1])], 
+                'sectors_read': [int(line[2])], 
+                'millis_reading': [int(line[3])], 
+                'writes_completed': [int(line[4])], 
+                'writes_merged': [int(line[5])], 
+                'sectors_written': [int(line[6])],
+                'millis_writing': [int(line[7])]}
 
     def update(self):
         self.data = self.read_stats(self.files['diskstat'])
