@@ -16,7 +16,6 @@ class Stat(StatIface):
         # read last line beginning with 'IpExt:'
         grep_lines = [w for w in lines if w.split()[0] == 'IpExt:']
         line = grep_lines[-1]
-        print line
         net_values = line.split()
         return {'InOctets': [int(net_values[7])],
                 'OutOctets': [int(net_values[8])]} 
