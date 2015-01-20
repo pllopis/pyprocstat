@@ -16,7 +16,8 @@ class Stat(StatIface):
 
     def update(self):
         for reading in self.ipmisession.get_sensor_data():
-            self.data['IPMI_' + reading['name']] = [reading['value']]
+            key = 'IPMI_' + reading.name.replace(' ', '_').replace('-', '_')
+            self.data[key] = [reading.value]
 
     def diff(self):
         if self.last_data == None:
