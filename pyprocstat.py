@@ -37,7 +37,7 @@ def capture(sleeptime, port, quiet=False):
         if not quiet: print "Incoming connection from", address
         stat = ProcStat()
         while True:
-            stat.update() # gather system data
+            stat.update(sleeptime) # gather system data
             data = str(stat)
             if not quiet:
                 print "Sending (len %s, %s items): \"%s\"" % (len(data), len(data.split()), data)

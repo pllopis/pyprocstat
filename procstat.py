@@ -5,7 +5,7 @@ import os
 from os.path import join
 from stat_iface import StatIface
 
-default_modules = ['stat', 'meminfo', 'vmstat', 'temp', 'io', 'net']
+default_modules = ['stat', 'meminfo', 'vmstat', 'thermal', 'io', 'net']
 
 class ProcStat:
     def __init__(self, load_modules=default_modules):
@@ -25,9 +25,9 @@ class ProcStat:
         except Exception:
             raise
 
-    def update(self):
+    def update(self, sleeptime):
         [instance.update() for instance in self.instances]
-        [instance.diff() for instance in self.instances]
+        [instance.diff(sleeptime) for instance in self.instances]
         self.bundle_data = []
         bundles = [instance.bundle() for instance in self.instances]
         map(self.bundle_data.extend, bundles)

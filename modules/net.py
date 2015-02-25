@@ -23,7 +23,7 @@ class Stat(StatIface):
     def update(self):
         self.data = self.read_stats(self.files['netstat'])
 
-    def diff(self):
+    def diff(self, sleeptime):
         if self.last_data == None:
             self.last_data = self.data
             for key in self.data:

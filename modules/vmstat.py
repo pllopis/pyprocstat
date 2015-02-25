@@ -15,7 +15,7 @@ class Stat(StatIface):
         self.data = self.file_read_fields(self.files['vmstat'], 
                         val_idx=1, fields=fields)
 
-    def diff(self):
+    def diff(self, sleeptime):
         if self.last_data == None:
             self.last_data = self.data
             for key in self.data:

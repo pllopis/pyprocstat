@@ -36,7 +36,7 @@ class Stat(StatIface):
         for key, value in self.files.iteritems():
             self.data[key] = [self.file_read_int(value)]
 
-    def diff(self):
+    def diff(self, sleeptime):
         if self.last_data == None:
             self.last_data = self.data
             for key in self.data:

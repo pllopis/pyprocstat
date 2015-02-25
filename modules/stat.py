@@ -31,7 +31,7 @@ class Stat(StatIface):
                 self.data['%s_guest' % key] = [value[8]]
                 self.data['%s_guest_nice' % key] = [value[9]]
         
-    def diff(self):
+    def diff(self, sleeptime):
         if self.last_data == None:
             # Since one iteration is not enough to gather differential data,
             # make sure first iteration returns a header with key name for every column,
