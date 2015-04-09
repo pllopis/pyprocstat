@@ -1,10 +1,11 @@
 from stat_iface import StatIface
 
 class Stat(StatIface):
-    def __init__(self, uname):
+    def __init__(self, uname, device):
         if uname[0] != 'Linux':
             raise Exception('OS required to be Linux.')
-        self.files = self.open_files({'diskstat': '/sys/block/sdb/stat'})
+        statdevice = '/sys/block/%s/stat' % device
+        self.files = self.open_files({'diskstat': statdevice})
         self.last_data = None
         self.data = {}
         self.diff_data = {}

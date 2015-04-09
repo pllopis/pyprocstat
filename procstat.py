@@ -2,20 +2,16 @@ import glob
 import time
 import importlib
 import os
+import ConfigParser
 from os.path import join
 from stat_iface import StatIface
 
 default_modules = ['stat', 'meminfo', 'vmstat', 'thermal', 'io', 'net', 'intel']
 
 class ProcStat:
-    def __init__(self, load_modules=default_modules):
-        uname = os.uname()
+    def __init__(self):
         try:
-            modules = [importlib.import_module('modules.%s' % m) for m in load_modules]
-            self.instances = [getattr(m, 'Stat')(uname) for m in modules]
-            for i in self.instances:
-                if not isinstance(i, StatIface):
-                    raise NotImplementedError('module %s does not implement Stat' % m)
+            self.instances = [i for i in self._get_instances('config')]
 #        except ImportError:
 #            raise Exception('Module %s not found.' % m)
 #        except AttributeError:
@@ -24,6 +20,19 @@ class ProcStat:
 #            raise Exception('Module %s does not implement StatIface.' % m)
         except Exception:
             raise
+
+    def _get_instances(self, config_file):
+        config = ConfigParser.RawConfigParser()
+        config.read([config_file])
+        module_names = config.sections()
+        for module_name in module_names:
+            module_kwargs = dict(config.items(module_name))
+            print '%s kwargs' % module_kwargs
+            module = importlib.import_module('modules.%s.%s' % (module_name, module_name))
+            instance = getattr(module, 'Stat')(os.uname(), **module_kwargs)
+            if not isinstance(instance, StatIface):
+                raise NotImplementedError('module %s does not implement Stat' % m)
+            yield instance
 
     def update(self, sleeptime):
         [instance.update() for instance in self.instances]

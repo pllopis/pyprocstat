@@ -9,6 +9,7 @@ class Stat(StatIface):
         self.data = {}
         self.diff_data = {}
         self.update()
+        self.name = 'stat'
 
     def update(self):
         self.data = self.file_read_fields(self.files['stat'])
