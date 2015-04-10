@@ -4,11 +4,11 @@ import fnmatch
 import os
 
 class Stat(StatIface):
-    def __init__(self, uname):
+    def __init__(self, uname, ip, user, password):
         if uname[0] != 'Linux':
             raise Exception('OS required to be Linux.')
 
-        self.ipmisession = command.Command(bmc='10.100.9.2', userid='ADMIN', password='ADMIN')
+        self.ipmisession = command.Command(bmc=ip, userid=user, password=password)
         self.last_data = None
         self.data = {}
         self.diff_data = {}

@@ -69,12 +69,12 @@ class Stat(StatIface):
     char *get_header_row(void);
     """
 
-    def __init__(self, uname):
+    def __init__(self, uname, library_path):
         if uname[0] != 'Linux':
             raise Exception('OS required to be Linux.')
         self.ffi = FFI()
         self.ffi.cdef(self.cdef)
-        self.lib = self.ffi.dlopen('./modules/libintel.so')
+        self.lib = self.ffi.dlopen(library_path)
         ret = self.lib.libintel_init()
         if ret < 0:
             raise Exception('Error initializing libintel: %s' % ret)
