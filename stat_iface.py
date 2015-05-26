@@ -19,7 +19,7 @@ class StatIface:
        Expects a dict where key is a name (str), and value is file path (str).
        Returns a dict with the same keys, but open file descriptors instead of paths.
        '''
-       return { name : open(files[name]) for name in files }
+       return dict((name, open(files[name])) for name in files )
         
     def file_read_int(self, f):
         '''
