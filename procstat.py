@@ -6,12 +6,10 @@ import ConfigParser
 from os.path import join
 from stat_iface import StatIface
 
-default_modules = ['stat', 'meminfo', 'vmstat', 'thermal', 'io', 'net', 'intel']
-
 class ProcStat:
-    def __init__(self):
+    def __init__(self, config_path=os.path.expanduser('~/.pyprocstat/config')):
         try:
-            self.instances = [i for i in self._get_instances('config')]
+            self.instances = [i for i in self._get_instances(config_path)]
 #        except ImportError:
 #            raise Exception('Module %s not found.' % m)
 #        except AttributeError:
@@ -27,7 +25,6 @@ class ProcStat:
         module_names = config.sections()
         for module_name in module_names:
             module_kwargs = dict(config.items(module_name))
-            print '%s kwargs' % module_kwargs
             module = importlib.import_module('modules.%s.%s' % (module_name, module_name))
             instance = getattr(module, 'Stat')(os.uname(), **module_kwargs)
             if not isinstance(instance, StatIface):
