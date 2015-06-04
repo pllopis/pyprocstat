@@ -17,7 +17,7 @@ import os, sys, getopt, socket, time, struct
 from procstat import ProcStat
 from docopt import docopt
 
-def capture(sleeptime, port, quiet=False):
+def capture2(sleeptime, port, quiet=False):
     #for i in stat.cpu_data['cstates']:
     #    for j in i:
     #        print j['latency']
@@ -60,6 +60,17 @@ def capture(sleeptime, port, quiet=False):
                 print "Interrupted! Restarting.."
                 s.close()
                 break
+
+def capture(sleeptime, port, quiet=False):
+    stat = ProcStat()
+    while True:
+        stat.update(sleeptime)
+        print str(stat),
+        try:
+	    time.sleep(sleeptime)
+        except:
+	    #print "Interrupted! Quitting.."
+	    break
 
 def main(arguments):
     sleeptime = float(arguments['--sleep'])
