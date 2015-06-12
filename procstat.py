@@ -18,6 +18,7 @@ class ProcStat:
 #            raise Exception('Module %s does not implement StatIface.' % m)
         except Exception:
             raise
+        self.firstrun = True
 
     def _get_instances(self, config_file):
         config = ConfigParser.RawConfigParser()
@@ -33,12 +34,17 @@ class ProcStat:
 
     def update(self, sleeptime):
         [instance.update() for instance in self.instances]
+        if self.firstrun:
+            self.firstrun = False
+            timestamp = 'timestamp'
+        else:
+            timestamp = '%.6f' % time.time()
         [instance.diff(sleeptime) for instance in self.instances]
         self.bundle_data = []
         bundles = [instance.bundle() for instance in self.instances]
         map(self.bundle_data.extend, bundles)
         # add timestamp for this sample
-        self.bundle_data.insert(0, '%.6f' % time.time()) 
+        self.bundle_data.insert(0, timestamp) 
     
     def __str__(self):
         return "%s\n" % ' '.join(self.bundle_data)
