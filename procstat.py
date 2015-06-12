@@ -37,6 +37,8 @@ class ProcStat:
         self.bundle_data = []
         bundles = [instance.bundle() for instance in self.instances]
         map(self.bundle_data.extend, bundles)
+        # add timestamp for this sample
+        self.bundle_data.insert(0, '%.6f' % time.time()) 
     
     def __str__(self):
         return "%s\n" % ' '.join(self.bundle_data)
